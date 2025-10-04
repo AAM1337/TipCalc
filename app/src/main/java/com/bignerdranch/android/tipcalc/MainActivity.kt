@@ -48,6 +48,8 @@ fun TipCalcScreen(modifier: Modifier = Modifier) {
     var billInput by remember { mutableStateOf("") }
     var dishesInput by remember { mutableStateOf("") }
     var tipsInput by remember { mutableStateOf("") }
+    val bill = billInput.toFloatOrNull() ?: 0f
+    var tipsAmount by remember { mutableStateOf(0f) }
 
     val dishes = dishesInput.toIntOrNull() ?: 0
     val discountPercent = when {
@@ -71,7 +73,11 @@ fun TipCalcScreen(modifier: Modifier = Modifier) {
             Text("Сумма заказа:", modifier = Modifier.weight(1f))
             OutlinedTextField(
                 value = billInput,
-                onValueChange = { billInput = it },
+                onValueChange = { txt ->
+                    billInput = txt
+                    val b = txt.replace(',', '.').toFloatOrNull() ?: 0f
+                    tipsAmount = b * tipPercent / 100f
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.weight(1f)
             )
@@ -93,7 +99,10 @@ fun TipCalcScreen(modifier: Modifier = Modifier) {
         Text("Чаевые:")
         Slider(
             value = tipPercent,
-            onValueChange = { tipPercent = it.coerceIn(0f, 25f) },
+            onValueChange = {
+                tipPercent = it.coerceIn(0f, 25f)
+                tipsAmount = bill * tipPercent / 100f
+            },
             valueRange = 0f..25f,
             modifier = Modifier.fillMaxWidth()
         )
@@ -128,10 +137,23 @@ fun TipCalcScreen(modifier: Modifier = Modifier) {
         ) {
             Text("Сумма чаевых:", modifier = Modifier.weight(1f))
             OutlinedTextField(
-                value = tipsInput,
-                onValueChange = { tipsInput = it },
+                value = if (tipsAmount == 0f) "" else String.format("%.2f", tipsAmount),
+                onValueChange = { txt ->
+                    val newTips = txt.replace(',', '.').toFloatOrNull()
+                    if (newTips != null) {
+                        tipsAmount = newTips
+                        if (tipPercent > 0f) {
+                            val recalculatedBill = tipsAmount / (tipPercent / 100f)
+                            billInput = String.format("%.2f", recalculatedBill)
+                        }
+                    } else {
+                        tipsAmount = 0f
+                    }
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                singleLine = true,
+                placeholder = { Text("0") }
             )
         }
     }
