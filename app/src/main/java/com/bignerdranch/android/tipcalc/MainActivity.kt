@@ -20,10 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TipCalcTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    TipCalcScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -31,17 +28,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TipCalcTheme {
-        Greeting("Android")
+fun TipCalcScreen(modifier: Modifier = Modifier) {
+    androidx.compose.foundation.layout.Column(modifier = modifier) {
+        androidx.compose.material3.Text("Калькулятор чаевых")
     }
 }
