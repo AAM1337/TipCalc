@@ -4,13 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.bignerdranch.android.tipcalc.ui.theme.TipCalcTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +45,94 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TipCalcScreen(modifier: Modifier = Modifier) {
-    androidx.compose.foundation.layout.Column(modifier = modifier) {
-        androidx.compose.material3.Text("Калькулятор чаевых")
+    var billInput by remember { mutableStateOf("") }
+    var dishesInput by remember { mutableStateOf("") }
+    var tipsInput by remember { mutableStateOf("") }
+    var tipPercent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(10f) }
+    androidx.compose.foundation.layout.Column(
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Сумма заказа:", modifier = Modifier.weight(1f))
+            OutlinedTextField(
+                value = billInput,
+                onValueChange = { billInput = it },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Количество блюд:", modifier = Modifier.weight(1f))
+            OutlinedTextField(
+                value = dishesInput,
+                onValueChange = { dishesInput = it },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+        Text("Чаевые:")
+        Slider(
+            value = tipPercent,
+            onValueChange = { tipPercent = it.coerceIn(0f, 25f) },
+            valueRange = 0f..25f,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("0")
+            Text("25")
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Скидка:")
+            listOf("3%", "5%", "7%", "10%").forEach { label ->
+                androidx.compose.foundation.layout.Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    RadioButton(
+                        selected = false,
+                        onClick = {},
+                        enabled = false
+                    )
+                    Text(label)
+                }
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Сумма чаевых:", modifier = Modifier.weight(1f))
+            OutlinedTextField(
+                value = tipsInput,
+                onValueChange = { tipsInput = it },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun TipCalcPreview() {
+    TipCalcTheme {
+        TipCalcScreen(modifier = Modifier.padding(16.dp))
     }
 }
