@@ -48,6 +48,16 @@ fun TipCalcScreen(modifier: Modifier = Modifier) {
     var billInput by remember { mutableStateOf("") }
     var dishesInput by remember { mutableStateOf("") }
     var tipsInput by remember { mutableStateOf("") }
+
+    val dishes = dishesInput.toIntOrNull() ?: 0
+    val discountPercent = when {
+        dishes in 1..2 -> 3
+        dishes in 3..5 -> 5
+        dishes in 6..10 -> 7
+        dishes > 10 -> 10
+        else -> 0
+    }
+
     var tipPercent by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(10f) }
     androidx.compose.foundation.layout.Column(
         modifier = modifier
@@ -100,16 +110,14 @@ fun TipCalcScreen(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("Скидка:")
-            listOf("3%", "5%", "7%", "10%").forEach { label ->
-                androidx.compose.foundation.layout.Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+            listOf(3, 5, 7, 10).forEach { opt ->
+                androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     RadioButton(
-                        selected = false,
-                        onClick = {},
+                        selected = discountPercent == opt,
+                        onClick = { },
                         enabled = false
                     )
-                    Text(label)
+                    Text("$opt%")
                 }
             }
         }
